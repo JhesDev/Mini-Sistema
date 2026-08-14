@@ -1,5 +1,5 @@
 # ==========================================
-# 1. ARCHIVOS DE ENTORNO Y SECRETOS (¡Nunca subir!)
+# 1. ARCHIVOS DE ENTORNO Y SECRETOS
 # ==========================================
 .env
 .env.local
