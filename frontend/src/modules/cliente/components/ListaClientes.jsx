@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useClientes, useEliminarCliente } from '../hooks/useClientes';
+import { ClienteFormModal } from './ClienteFormModal';
 import { ConfirmModal } from '@/shared/components/ConfirmModal';
 import { Button } from '@/shared/components/Button';
 import { Pagination } from '@/shared/components/Pagination';
@@ -13,6 +14,8 @@ export function ListaClientes() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [deleteId, setDeleteId] = useState(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editCliente, setEditCliente] = useState(null);
 
   const { register, watch } = useForm({ defaultValues: { search: '' } });
   const search = watch('search');
@@ -37,9 +40,19 @@ export function ListaClientes() {
 
   return (
     <section>
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Clientes</h1>
-        <p className="text-sm text-slate-500 mt-1">Consulta y elimina clientes registrados</p>
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Clientes</h1>
+          <p className="text-sm text-slate-500 mt-1">Crea, actualiza y elimina clientes registrados</p>
+        </div>
+        <Button
+          onClick={() => {
+            setEditCliente(null);
+            setFormOpen(true);
+          }}
+        >
+          Nuevo cliente
+        </Button>
       </header>
 
       <div className="mb-6">
@@ -101,9 +114,20 @@ export function ListaClientes() {
                           {c.telefono ?? '—'}
                         </td>
                         <td className="px-4 py-3.5 whitespace-nowrap">
-                          <Button variant="danger" onClick={() => setDeleteId(c.id)}>
-                            Eliminar
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="secondary"
+                              onClick={() => {
+                                setEditCliente(c);
+                                setFormOpen(true);
+                              }}
+                            >
+                              Editar
+                            </Button>
+                            <Button variant="danger" onClick={() => setDeleteId(c.id)}>
+                              Eliminar
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -124,6 +148,17 @@ export function ListaClientes() {
             }}
           />
         </>
+      )}
+
+      {formOpen && (
+        <ClienteFormModal
+          open={formOpen}
+          cliente={editCliente}
+          onClose={() => {
+            setFormOpen(false);
+            setEditCliente(null);
+          }}
+        />
       )}
 
       <ConfirmModal
