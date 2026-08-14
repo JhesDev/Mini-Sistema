@@ -36,17 +36,17 @@ export function ListaClientes() {
   };
 
   return (
-    <section className="page">
-      <header className="page__header">
-        <h1>Clientes</h1>
-        <p className="page__subtitle">Consulta y elimina clientes registrados</p>
+    <section>
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Clientes</h1>
+        <p className="text-sm text-slate-500 mt-1">Consulta y elimina clientes registrados</p>
       </header>
 
-      <div className="filters">
+      <div className="mb-6">
         <input
           type="search"
           placeholder="Buscar por nombre o documento…"
-          className="input"
+          className="w-full max-w-md rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs"
           {...register('search')}
         />
       </div>
@@ -56,43 +56,61 @@ export function ListaClientes() {
 
       {!isLoading && !isError && (
         <>
-          <div className="table-wrapper">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Documento</th>
-                  <th>Nombre</th>
-                  <th>Email</th>
-                  <th>Teléfono</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clientes.length === 0 ? (
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead className="bg-slate-50">
                   <tr>
-                    <td colSpan={5} className="table__empty">
-                      No se encontraron clientes
-                    </td>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Documento
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Nombre
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Teléfono
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Acciones
+                    </th>
                   </tr>
-                ) : (
-                  clientes.map((c) => (
-                    <tr key={c.id}>
-                      <td>
-                        {c.tipo_doc} {c.num_doc}
-                      </td>
-                      <td>{nombreCliente(c)}</td>
-                      <td>{c.email ?? '—'}</td>
-                      <td>{c.telefono ?? '—'}</td>
-                      <td>
-                        <Button variant="danger" onClick={() => setDeleteId(c.id)}>
-                          Eliminar
-                        </Button>
+                </thead>
+                <tbody className="divide-y divide-slate-200 bg-white">
+                  {clientes.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-12 text-center text-sm text-slate-500">
+                        No se encontraron clientes
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    clientes.map((c) => (
+                      <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="px-4 py-3.5 font-medium text-slate-900 whitespace-nowrap">
+                          {c.tipo_doc} {c.num_doc}
+                        </td>
+                        <td className="px-4 py-3.5 text-slate-700 whitespace-nowrap">
+                          {nombreCliente(c)}
+                        </td>
+                        <td className="px-4 py-3.5 text-slate-600 whitespace-nowrap">
+                          {c.email ?? '—'}
+                        </td>
+                        <td className="px-4 py-3.5 text-slate-600 whitespace-nowrap">
+                          {c.telefono ?? '—'}
+                        </td>
+                        <td className="px-4 py-3.5 whitespace-nowrap">
+                          <Button variant="danger" onClick={() => setDeleteId(c.id)}>
+                            Eliminar
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <Pagination
@@ -119,7 +137,9 @@ export function ListaClientes() {
       />
 
       {eliminar.isError && (
-        <Alert>{eliminar.error?.message ?? 'No se pudo eliminar el cliente'}</Alert>
+        <div className="mt-4">
+          <Alert>{eliminar.error?.message ?? 'No se pudo eliminar el cliente'}</Alert>
+        </div>
       )}
     </section>
   );

@@ -100,32 +100,28 @@ export function BandejaTramites() {
   };
 
   return (
-    <section className="page">
-      <header className="page__header page__header--actions">
+    <section>
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1>Bandeja de trámites</h1>
-          <p className="page__subtitle">
-            Paginación server-side por estado y cliente; búsqueda por código es client-side sobre
-            los resultados cargados.
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Bandeja de trámites</h1>
+          <p className="text-sm text-slate-500 mt-1 max-w-2xl">
+            Gestión integral de trámites vehiculares, seguimiento de estado y asignaciones
           </p>
         </div>
-        <Button onClick={() => setShowCreate(true)}>Nuevo trámite</Button>
+        <Button onClick={() => setShowCreate(true)}>+ Nuevo trámite</Button>
       </header>
 
       {feedback && (
-        <Alert type="success">
+        <Alert type="success" onClose={() => setFeedback(null)}>
           {feedback}
-          <button type="button" className="alert__close" onClick={() => setFeedback(null)}>
-            ×
-          </button>
         </Alert>
       )}
 
-      <div className="filters">
+      <div className="space-y-3 mb-6">
         <input
           type="search"
           placeholder="Buscar por código (INM-…) o documento/nombre del cliente…"
-          className="input filters__search"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-xs"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -133,10 +129,14 @@ export function BandejaTramites() {
           }}
         />
 
-        <div className="filters__estados">
+        <div className="flex flex-wrap items-center gap-1.5">
           <button
             type="button"
-            className={`chip ${estado === '' ? 'chip--active' : ''}`}
+            className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-colors ${
+              estado === ''
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+            }`}
             onClick={() => {
               setEstado('');
               setPage(1);
@@ -148,7 +148,11 @@ export function BandejaTramites() {
             <button
               key={e}
               type="button"
-              className={`chip ${estado === e ? 'chip--active' : ''}`}
+              className={`px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-colors ${
+                estado === e
+                  ? 'bg-blue-600 text-white shadow-xs'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+              }`}
               onClick={() => {
                 setEstado(e);
                 setPage(1);
@@ -169,63 +173,90 @@ export function BandejaTramites() {
 
       {!isLoading && !isError && (
         <>
-          {isFetching && <p className="fetching-hint">Actualizando…</p>}
+          {isFetching && (
+            <p className="text-xs text-slate-400 mb-2 italic">Actualizando información…</p>
+          )}
 
-          <div className="table-wrapper">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Código</th>
-                  <th>Cliente</th>
-                  <th>Vehículo</th>
-                  <th>Estado</th>
-                  <th>Fecha</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {meta.rows.length === 0 ? (
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead className="bg-slate-50">
                   <tr>
-                    <td colSpan={6} className="table__empty">
-                      No se encontraron trámites
-                    </td>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Código
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Cliente
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Vehículo
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Estado
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Fecha
+                    </th>
+                    <th className="px-4 py-3.5 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Acciones
+                    </th>
                   </tr>
-                ) : (
-                  meta.rows.map((t) => (
-                    <tr key={t.id}>
-                      <td>
-                        <strong>{t.codigo}</strong>
-                      </td>
-                      <td>
-                        <div>{nombreCliente(t.cliente)}</div>
-                        {t.cliente && (
-                          <small className="text-muted">
-                            {t.cliente.tipo_doc} {t.cliente.num_doc}
-                          </small>
-                        )}
-                      </td>
-                      <td>{vehiculoLabel(t)}</td>
-                      <td>
-                        <Badge estado={t.estado} />
-                      </td>
-                      <td>{formatFecha(t.created_at)}</td>
-                      <td>
-                        <div className="table__actions">
-                          <Link className="btn btn--link" to={`/tramites/${t.id}`}>
-                            Ver
-                          </Link>
-                          {puedeCambiarEstado(t.estado) && (
-                            <Button variant="link" onClick={() => setTramiteEstado(t)}>
-                              Cambiar estado
-                            </Button>
-                          )}
-                        </div>
+                </thead>
+                <tbody className="divide-y divide-slate-200 bg-white">
+                  {meta.rows.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-12 text-center text-sm text-slate-500">
+                        No se encontraron trámites
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    meta.rows.map((t) => (
+                      <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="px-4 py-3.5 font-semibold text-slate-900 whitespace-nowrap">
+                          {t.codigo}
+                        </td>
+                        <td className="px-4 py-3.5 whitespace-nowrap">
+                          <div className="font-medium text-slate-900">{nombreCliente(t.cliente)}</div>
+                          {t.cliente && (
+                            <div className="text-xs text-slate-500">
+                              {t.cliente.tipo_doc} {t.cliente.num_doc}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3.5 text-slate-700 whitespace-nowrap">
+                          {vehiculoLabel(t)}
+                        </td>
+                        <td className="px-4 py-3.5 whitespace-nowrap">
+                          <Badge estado={t.estado} />
+                        </td>
+                        <td className="px-4 py-3.5 text-slate-600 whitespace-nowrap">
+                          {formatFecha(t.created_at)}
+                        </td>
+                        <td className="px-4 py-3.5 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <Link
+                              className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
+                              to={`/tramites/${t.id}`}
+                            >
+                              Ver
+                            </Link>
+                            {puedeCambiarEstado(t.estado) && (
+                              <Button
+                                variant="link"
+                                onClick={() => setTramiteEstado(t)}
+                                className="text-xs font-medium text-slate-600 hover:text-slate-900"
+                              >
+                                Cambiar estado
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <Pagination

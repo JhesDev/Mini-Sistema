@@ -29,97 +29,107 @@ export function TramiteDetalle() {
   const cliente = tramite.cliente;
 
   return (
-    <section className="page">
-      <header className="page__header page__header--actions">
-        <div>
-          <Link to="/" className="back-link">
-            ← Volver a la bandeja
-          </Link>
-          <h1>Trámite {tramite.codigo}</h1>
-          <Badge estado={tramite.estado} />
+    <section>
+      <header className="mb-6">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 mb-3"
+        >
+          ← Volver a la bandeja
+        </Link>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Trámite {tramite.codigo}
+            </h1>
+            <Badge estado={tramite.estado} />
+          </div>
+          {puedeCambiarEstado(tramite.estado) && (
+            <Button onClick={() => setShowCambiarEstado(true)}>Cambiar estado</Button>
+          )}
         </div>
-        {puedeCambiarEstado(tramite.estado) && (
-          <Button onClick={() => setShowCambiarEstado(true)}>Cambiar estado</Button>
-        )}
       </header>
 
       {feedback && (
-        <Alert type="success">
+        <Alert type="success" onClose={() => setFeedback(null)}>
           {feedback}
-          <button type="button" className="alert__close" onClick={() => setFeedback(null)}>
-            ×
-          </button>
         </Alert>
       )}
 
-      <div className="detail-grid">
-        <article className="card">
-          <h2 className="card__title">Datos del trámite</h2>
-          <dl className="detail-list">
-            <div>
-              <dt>Código</dt>
-              <dd>{tramite.codigo}</dd>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <article className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
+          <h2 className="text-base font-semibold text-slate-900 mb-4 pb-2.5 border-b border-slate-100">
+            Datos del trámite
+          </h2>
+          <dl className="divide-y divide-slate-100 text-sm">
+            <div className="py-2.5 grid grid-cols-3 gap-4">
+              <dt className="text-slate-500 font-medium">Código</dt>
+              <dd className="text-slate-900 font-semibold col-span-2">{tramite.codigo}</dd>
             </div>
-            <div>
-              <dt>Estado</dt>
-              <dd>
+            <div className="py-2.5 grid grid-cols-3 gap-4">
+              <dt className="text-slate-500 font-medium">Estado</dt>
+              <dd className="col-span-2">
                 <Badge estado={tramite.estado} />
               </dd>
             </div>
-            <div>
-              <dt>Marca / Modelo</dt>
-              <dd>
+            <div className="py-2.5 grid grid-cols-3 gap-4">
+              <dt className="text-slate-500 font-medium">Marca / Modelo</dt>
+              <dd className="text-slate-900 font-medium col-span-2">
                 {tramite.marca} {tramite.modelo} ({tramite.anio})
               </dd>
             </div>
-            <div>
-              <dt>Placa</dt>
-              <dd>{tramite.placa ?? '—'}</dd>
+            <div className="py-2.5 grid grid-cols-3 gap-4">
+              <dt className="text-slate-500 font-medium">Placa</dt>
+              <dd className="text-slate-900 font-medium col-span-2">{tramite.placa ?? '—'}</dd>
             </div>
-            <div>
-              <dt>Monto</dt>
-              <dd>{formatMonto(tramite.monto)}</dd>
+            <div className="py-2.5 grid grid-cols-3 gap-4">
+              <dt className="text-slate-500 font-medium">Monto</dt>
+              <dd className="text-slate-900 font-semibold col-span-2">{formatMonto(tramite.monto)}</dd>
             </div>
-            <div>
-              <dt>Registrado</dt>
-              <dd>{formatFechaHora(tramite.created_at)}</dd>
+            <div className="py-2.5 grid grid-cols-3 gap-4">
+              <dt className="text-slate-500 font-medium">Registrado</dt>
+              <dd className="text-slate-700 col-span-2">{formatFechaHora(tramite.created_at)}</dd>
             </div>
-            <div>
-              <dt>Última actualización</dt>
-              <dd>{formatFechaHora(tramite.updated_at)}</dd>
+            <div className="py-2.5 grid grid-cols-3 gap-4">
+              <dt className="text-slate-500 font-medium">Última actualización</dt>
+              <dd className="text-slate-700 col-span-2">{formatFechaHora(tramite.updated_at)}</dd>
             </div>
           </dl>
         </article>
 
-        <article className="card">
-          <h2 className="card__title">Cliente</h2>
+        <article className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
+          <h2 className="text-base font-semibold text-slate-900 mb-4 pb-2.5 border-b border-slate-100">
+            Cliente asociado
+          </h2>
           {cliente ? (
-            <dl className="detail-list">
-              <div>
-                <dt>Nombre</dt>
-                <dd>{nombreCliente(cliente)}</dd>
+            <dl className="divide-y divide-slate-100 text-sm">
+              <div className="py-2.5 grid grid-cols-3 gap-4">
+                <dt className="text-slate-500 font-medium">Nombre</dt>
+                <dd className="text-slate-900 font-semibold col-span-2">{nombreCliente(cliente)}</dd>
               </div>
-              <div>
-                <dt>Documento</dt>
-                <dd>
+              <div className="py-2.5 grid grid-cols-3 gap-4">
+                <dt className="text-slate-500 font-medium">Documento</dt>
+                <dd className="text-slate-900 font-medium col-span-2">
                   {cliente.tipo_doc} {cliente.num_doc}
                 </dd>
               </div>
-              <div>
-                <dt>Email</dt>
-                <dd>{cliente.email ?? '—'}</dd>
+              <div className="py-2.5 grid grid-cols-3 gap-4">
+                <dt className="text-slate-500 font-medium">Email</dt>
+                <dd className="text-slate-700 col-span-2">{cliente.email ?? '—'}</dd>
               </div>
-              <div>
-                <dt>Teléfono</dt>
-                <dd>{cliente.telefono ?? '—'}</dd>
+              <div className="py-2.5 grid grid-cols-3 gap-4">
+                <dt className="text-slate-500 font-medium">Teléfono</dt>
+                <dd className="text-slate-700 col-span-2">{cliente.telefono ?? '—'}</dd>
               </div>
-              <div>
-                <dt>Fecha nac.</dt>
-                <dd>{cliente.fecha_nac ? formatFecha(cliente.fecha_nac) : '—'}</dd>
+              <div className="py-2.5 grid grid-cols-3 gap-4">
+                <dt className="text-slate-500 font-medium">Fecha nac.</dt>
+                <dd className="text-slate-700 col-span-2">
+                  {cliente.fecha_nac ? formatFecha(cliente.fecha_nac) : '—'}
+                </dd>
               </div>
             </dl>
           ) : (
-            <p>Sin datos de cliente</p>
+            <p className="text-sm text-slate-500 py-4">Sin datos de cliente</p>
           )}
         </article>
       </div>

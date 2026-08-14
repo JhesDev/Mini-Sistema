@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/shared/auth';
 import { Button } from '@/shared/components/Button';
+import { Badge } from '@/shared/components/Badge';
 import { Alert } from '@/shared/components/Alert';
 
 const TEST_USERS = [
-  { label: 'Admin', username: 'admin', pass: 'admin123', role: 'ADMIN', badge: 'badge--purple' },
-  { label: 'Operador', username: 'operador', pass: 'operador123', role: 'OPERADOR', badge: 'badge--blue' },
-  { label: 'Supervisor', username: 'supervisor', pass: 'supervisor123', role: 'SUPERVISOR', badge: 'badge--green' },
+  { label: 'Admin', username: 'admin', pass: 'admin123', role: 'ADMIN', color: 'purple' },
+  { label: 'Operador', username: 'operador', pass: 'operador123', role: 'OPERADOR', color: 'blue' },
+  { label: 'Supervisor', username: 'supervisor', pass: 'supervisor123', role: 'SUPERVISOR', color: 'green' },
 ];
 
 export function LoginView() {
@@ -48,23 +49,30 @@ export function LoginView() {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-card">
-        <div className="login-header">
-          <div className="login-brand-icon">📋</div>
-          <h1 className="login-title">Gestión de Trámites</h1>
-          <p className="login-subtitle">Inicia sesión con tus credenciales de acceso</p>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-slate-200/80">
+        <div className="text-center mb-6">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 text-2xl shadow-xs">
+            📋
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Gestión de Trámites</h1>
+          <p className="text-sm text-slate-500 mt-1">Inicia sesión con tus credenciales de acceso</p>
         </div>
 
         {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
 
-        <form onSubmit={handleSubmit} className="form login-form">
-          <div className="form-field">
-            <label htmlFor="username">Usuario o Correo</label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
+            >
+              Usuario o Correo
+            </label>
             <input
               id="username"
               type="text"
-              className="input"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs transition-colors"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="admin, operador o correo..."
@@ -74,12 +82,17 @@ export function LoginView() {
             />
           </div>
 
-          <div className="form-field">
-            <label htmlFor="password">Contraseña</label>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5"
+            >
+              Contraseña
+            </label>
             <input
               id="password"
               type="password"
-              className="input"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-xs transition-colors"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -92,25 +105,29 @@ export function LoginView() {
             type="submit"
             variant="primary"
             loading={isSubmitting}
-            className="login-submit-btn"
+            className="w-full py-2.5 text-base font-semibold shadow-md mt-2"
           >
             Ingresar al Sistema
           </Button>
         </form>
 
-        <div className="login-demo-section">
-          <span className="login-demo-title">Acceso rápido para pruebas:</span>
-          <div className="login-demo-grid">
+        <div className="border-t border-slate-200 pt-6 mt-6">
+          <span className="block text-xs font-semibold text-slate-400 uppercase tracking-wider text-center mb-3">
+            Acceso rápido para pruebas
+          </span>
+          <div className="grid grid-cols-3 gap-2.5">
             {TEST_USERS.map((item) => (
               <button
                 key={item.username}
                 type="button"
-                className="login-demo-chip"
+                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50/60 hover:border-blue-200 transition-all cursor-pointer text-center group"
                 onClick={() => handleQuickFill(item)}
                 disabled={isSubmitting}
               >
-                <span className={`badge ${item.badge}`}>{item.role}</span>
-                <span className="login-demo-user">{item.username}</span>
+                <Badge color={item.color}>{item.role}</Badge>
+                <span className="text-xs font-semibold text-slate-700 group-hover:text-blue-700">
+                  {item.username}
+                </span>
               </button>
             ))}
           </div>
