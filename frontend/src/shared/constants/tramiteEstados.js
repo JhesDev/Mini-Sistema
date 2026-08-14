@@ -1,37 +1,41 @@
 export const TRAMITE_ESTADOS = [
   'REGISTRADO',
-  'EN_REVISION',
+  'EN_FIRMAS',
+  'PRESENTADO',
   'OBSERVADO',
-  'APROBADO',
-  'RECHAZADO',
-  'FINALIZADO',
+  'INSCRITO',
+  'CERRADO',
+  'ANULADO',
 ];
 
 export const TRANSICIONES_PERMITIDAS = {
-  REGISTRADO: ['EN_REVISION'],
-  EN_REVISION: ['OBSERVADO', 'APROBADO', 'RECHAZADO'],
-  OBSERVADO: ['EN_REVISION'],
-  APROBADO: ['FINALIZADO'],
-  RECHAZADO: [],
-  FINALIZADO: [],
+  REGISTRADO: ['EN_FIRMAS', 'ANULADO'],
+  EN_FIRMAS: ['PRESENTADO', 'OBSERVADO', 'ANULADO'],
+  OBSERVADO: ['EN_FIRMAS', 'PRESENTADO', 'ANULADO'],
+  PRESENTADO: ['INSCRITO', 'OBSERVADO'],
+  INSCRITO: ['CERRADO'],
+  CERRADO: [],
+  ANULADO: [],
 };
 
 export const ESTADO_LABELS = {
   REGISTRADO: 'Registrado',
-  EN_REVISION: 'En revisión',
+  EN_FIRMAS: 'En firmas',
+  PRESENTADO: 'Presentado',
   OBSERVADO: 'Observado',
-  APROBADO: 'Aprobado',
-  RECHAZADO: 'Rechazado',
-  FINALIZADO: 'Finalizado',
+  INSCRITO: 'Inscrito',
+  CERRADO: 'Cerrado',
+  ANULADO: 'Anulado',
 };
 
 export const ESTADO_COLORS = {
   REGISTRADO: 'gray',
-  EN_REVISION: 'blue',
+  EN_FIRMAS: 'blue',
+  PRESENTADO: 'teal',
   OBSERVADO: 'orange',
-  APROBADO: 'green',
-  RECHAZADO: 'red',
-  FINALIZADO: 'purple',
+  INSCRITO: 'green',
+  CERRADO: 'purple',
+  ANULADO: 'red',
 };
 
 export function getTransicionesValidas(estadoActual) {
