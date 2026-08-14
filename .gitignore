@@ -1,0 +1,53 @@
+# ==========================================
+# 1. ARCHIVOS DE ENTORNO Y SECRETOS (¡Nunca subir!)
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+
+# ==========================================
+# 2. DEPENDENCIAS
+# ==========================================
+# Node / JS
+node_modules/
+.pnpm-store/
+.yarn/cache/
+
+# PHP / Composer
+/vendor/
+
+# ==========================================
+# 3. ARCHIVOS GENERADOS Y COMPILADOS
+# ==========================================
+# Build outputs
+/dist/
+/build/
+/.next/
+/.output/
+*.log
+
+# Cache de frameworks (ej. Laravel)
+/storage/*.key
+/bootstrap/cache/*
+!/bootstrap/cache/.gitkeep
+
+# ==========================================
+# 4. ARCHIVOS DEL SISTEMA OPERATIVO Y IDEs
+# ==========================================
+# macOS / Linux / Windows
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# VS Code / JetBrains / Android Studio
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.iml
+.gradle/
