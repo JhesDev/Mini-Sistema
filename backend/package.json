@@ -7,7 +7,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "start": "node dist/server.js"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^22.16.5",
+    "tsc-alias": "^1.9.1",
     "tsx": "^4.20.3",
     "typescript": "^5.9.3"
   }
