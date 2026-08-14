@@ -26,7 +26,11 @@ export const tramiteController = {
 
   create: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const dto = createTramiteSchema.parse(req.body);
+      const payload = {
+        usuario: req.user?.username ?? 'sistema',
+        ...req.body,
+      };
+      const dto = createTramiteSchema.parse(payload);
       const data = await tramiteService.create(dto);
       ok(res, data, 201);
     } catch (err) { next(err); }
@@ -34,7 +38,11 @@ export const tramiteController = {
 
   cambiarEstado: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const dto = cambiarEstadoSchema.parse(req.body);
+      const payload = {
+        usuario: req.user?.username ?? 'sistema',
+        ...req.body,
+      };
+      const dto = cambiarEstadoSchema.parse(payload);
       const data = await tramiteService.cambiarEstado(Number(req.params.id), dto);
       ok(res, data);
     } catch (err) { next(err); }

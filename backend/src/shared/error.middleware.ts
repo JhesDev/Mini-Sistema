@@ -45,6 +45,18 @@ export class InvalidTransitionError extends AppError {
   }
 }
 
+export class UnauthorizedError extends AppError {
+  constructor(message = 'No autorizado') {
+    super(message, 401, 'UNAUTHORIZED');
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message = 'Acceso denegado: permisos insuficientes') {
+    super(message, 403, 'FORBIDDEN');
+  }
+}
+
 // ── Middleware centralizado ────────────────────────────────────────────────
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

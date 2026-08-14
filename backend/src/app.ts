@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 
+import { authRouter, requireAuth } from '@/modules/auth';
 import { clienteRouter } from '@/modules/cliente';
 import { tramiteRouter } from '@/modules/tramite';
 import { errorMiddleware } from '@/shared/error.middleware';
@@ -31,8 +32,12 @@ app.get('/api/health', (_req, res) => {
 
 // ── Módulos ────────────────────────────────────────────────────────────────
 
-app.use('/api/clientes', clienteRouter);
-app.use('/api/tramites', tramiteRouter);
+// Rutas de autenticación (login es público, /me es protegido internamente)
+app.use('/api/auth', authRouter);
+
+// Rutas protegidas que requieren JWT válido
+app.use('/api/clientes', requireAuth, clienteRouter);
+app.use('/api/tramites', requireAuth, tramiteRouter);
 
 // ── 404 para rutas no registradas ─────────────────────────────────────────
 
