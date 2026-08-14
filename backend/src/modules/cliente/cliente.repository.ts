@@ -89,7 +89,7 @@ Cliente.init(
 
 // ── Queries (Repository) ───────────────────────────────────────────────────
 
-import { Op, WhereOptions } from 'sequelize';
+import { Op, WhereOptions, Transaction } from 'sequelize';
 import { CreateClienteDto, ListClienteQuery, UpdateClienteDto } from './cliente.schema';
 
 export const clienteRepository = {
@@ -125,8 +125,8 @@ export const clienteRepository = {
   findByTipoAndNumDoc: async (tipo_doc: string, num_doc: string) =>
     Cliente.findOne({ where: { tipo_doc, num_doc } }),
 
-  create: async (data: CreateClienteDto) =>
-    Cliente.create(data),
+  create: async (data: CreateClienteDto, transaction?: Transaction) =>
+    Cliente.create(data, { transaction }),
 
   update: async (id: number, data: UpdateClienteDto) => {
     const [affectedRows] = await Cliente.update(data, { where: { id } });

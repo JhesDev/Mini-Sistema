@@ -51,10 +51,11 @@ Tramite.init(
     modelo: { type: DataTypes.STRING(50), allowNull: false },
     anio: { type: DataTypes.INTEGER, allowNull: false },
     estado: {
-      type: DataTypes.ENUM('REGISTRADO', 'EN_REVISION', 'OBSERVADO', 'APROBADO', 'RECHAZADO', 'FINALIZADO'),
+      type: DataTypes.ENUM('REGISTRADO', 'EN_FIRMAS', 'PRESENTADO', 'OBSERVADO', 'INSCRITO', 'CERRADO', 'ANULADO'),
       allowNull: false,
       defaultValue: 'REGISTRADO',
     },
+
     monto: { type: DataTypes.DECIMAL(10, 2), allowNull: true },
   },
   {
@@ -119,7 +120,10 @@ export const tramiteRepository = {
 
   findById: async (id: number) =>
     Tramite.findByPk(id, {
-      include: [{ model: Cliente, as: 'cliente' }],
+      include: [
+        { model: Cliente, as: 'cliente' },
+        { association: 'seguimientos' },
+      ],
     }),
 
   findByIdRaw: async (id: number) => Tramite.findByPk(id),
@@ -128,6 +132,14 @@ export const tramiteRepository = {
 
   create: async (data: Omit<TramiteAttributes, 'id'>, transaction?: Transaction) =>
     Tramite.create(data, { transaction }),
+
+  update: async (id: number, data: Partial<TramiteAttributes>, transaction?: Transaction) => {
+    const [affected] = await Tramite.update(data, { where: { id }, transaction });
+    return affected;
+  },
+
+  delete: async (id: number, transaction?: Transaction) =>
+    Tramite.destroy({ where: { id }, transaction }),
 
   updateEstado: async (id: number, estado: TramiteEstado, transaction?: Transaction) => {
     const [affected] = await Tramite.update({ estado }, { where: { id }, transaction });

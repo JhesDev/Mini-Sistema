@@ -5,6 +5,7 @@ import {
   createTramiteSchema,
   cambiarEstadoSchema,
   listTramiteSchema,
+  updateTramiteSchema,
 } from './tramite.schema';
 
 export const tramiteController = {
@@ -33,6 +34,21 @@ export const tramiteController = {
       const dto = createTramiteSchema.parse(payload);
       const data = await tramiteService.create(dto);
       ok(res, data, 201);
+    } catch (err) { next(err); }
+  },
+
+  update: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const dto = updateTramiteSchema.parse(req.body);
+      const data = await tramiteService.update(Number(req.params.id), dto);
+      ok(res, data);
+    } catch (err) { next(err); }
+  },
+
+  delete: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await tramiteService.delete(Number(req.params.id));
+      res.status(204).send();
     } catch (err) { next(err); }
   },
 

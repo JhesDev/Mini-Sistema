@@ -1,5 +1,5 @@
 import { sequelize } from '@/shared/db';
-import { NotFoundError, InvalidTransitionError } from '@/shared/error.middleware';
+import { NotFoundError, InvalidTransitionError, ValidationError, ConflictError } from '@/shared/error.middleware';
 import { tramiteRepository } from './tramite.repository';
 import { seguimientoRepository } from './seguimiento/seguimiento.repository';
 import { clienteRepository } from '@/modules/cliente/cliente.repository';
@@ -37,17 +37,38 @@ export const tramiteService = {
    * El código correlativo INM-YYYY-NNNN se genera dentro de la transacción.
    */
   create: async (dto: CreateTramiteDto) => {
-    // Verificar que el cliente existe
-    const cliente = await clienteRepository.findById(dto.cliente_id);
-    if (!cliente) throw new NotFoundError('Cliente');
-
     const result = await sequelize.transaction(async (t) => {
+      // Resolver/crear cliente dentro de la misma transacción
+      let clienteId: number | null = null;
+
+      if (dto.cliente_id) {
+        const cliente = await clienteRepository.findById(dto.cliente_id);
+        if (!cliente) throw new NotFoundError('Cliente');
+        clienteId = cliente.id;
+      } else if ((dto as any).cliente) {
+        const clienteDto = (dto as any).cliente;
+        // Buscar por tipo_doc + num_doc
+        let existing = await clienteRepository.findByTipoAndNumDoc(
+          clienteDto.tipo_doc,
+          clienteDto.num_doc,
+        );
+        if (!existing) {
+          // Crear cliente dentro de la transacción
+          const created = await clienteRepository.create(clienteDto, t);
+          clienteId = created.id;
+        } else {
+          clienteId = existing.id;
+        }
+      } else {
+        throw new ValidationError('Se requiere cliente_id o cliente (tipo_doc + num_doc)');
+      }
+
       const codigo = await tramiteRepository.nextCodigo();
 
       const tramite = await tramiteRepository.create(
         {
           codigo,
-          cliente_id: dto.cliente_id,
+          cliente_id: clienteId!,
           placa: dto.placa ?? null,
           marca: dto.marca,
           modelo: dto.modelo,
@@ -74,6 +95,59 @@ export const tramiteService = {
     });
 
     return result.toJSON();
+  },
+
+  update: async (id: number, dto: any) => {
+    const tramiteRaw = await tramiteRepository.findByIdRaw(id);
+    if (!tramiteRaw) throw new NotFoundError('Trámite');
+
+    const result = await sequelize.transaction(async (t) => {
+      // Resolver/crear cliente si es necesario
+      let clienteId = tramiteRaw.cliente_id;
+
+      if (dto.cliente_id) {
+        const cliente = await clienteRepository.findById(dto.cliente_id);
+        if (!cliente) throw new NotFoundError('Cliente');
+        clienteId = cliente.id;
+      } else if (dto.cliente) {
+        const clienteDto = dto.cliente;
+        let existing = await clienteRepository.findByTipoAndNumDoc(clienteDto.tipo_doc, clienteDto.num_doc);
+        if (!existing) {
+          const created = await clienteRepository.create(clienteDto, t);
+          clienteId = created.id;
+        } else {
+          clienteId = existing.id;
+        }
+      }
+
+      const updateData: any = {
+        placa: dto.placa ?? tramiteRaw.placa,
+        marca: dto.marca ?? tramiteRaw.marca,
+        modelo: dto.modelo ?? tramiteRaw.modelo,
+        anio: dto.anio ?? tramiteRaw.anio,
+        monto: dto.monto ?? tramiteRaw.monto,
+        cliente_id: clienteId,
+      };
+
+      await tramiteRepository.update(id, updateData, t);
+      const updated = await tramiteRepository.findById(id);
+      return updated!.toJSON();
+    });
+
+    return result;
+  },
+
+  delete: async (id: number) => {
+    const tramite = await tramiteRepository.findByIdRaw(id);
+    if (!tramite) throw new NotFoundError('Trámite');
+
+    if (tramite.estado === 'INSCRITO' || tramite.estado === 'CERRADO') {
+      throw new ConflictError('No se puede eliminar un trámite inscrito o cerrado');
+    }
+
+    await sequelize.transaction(async (t) => {
+      await tramiteRepository.delete(id, t);
+    });
   },
 
   cambiarEstado: async (id: number, dto: CambiarEstadoDto) => {

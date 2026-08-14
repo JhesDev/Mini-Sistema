@@ -12,6 +12,8 @@ const router = Router();
 router.get('/', tramiteController.list);
 router.post('/', tramiteController.create);
 router.get('/:id', tramiteController.getById);
+router.patch('/:id', tramiteController.update);
+router.delete('/:id', tramiteController.delete);
 router.patch('/:id/estado', tramiteController.cambiarEstado);
 
 // Subdominio seguimientos
